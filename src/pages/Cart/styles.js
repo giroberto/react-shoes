@@ -59,6 +59,10 @@ export const ProductTable = styled.table`
     font-weight: bold;
   }
 
+  svg {
+    border: 0;
+  }
+
   div {
     display: flex;
     align-items: center;

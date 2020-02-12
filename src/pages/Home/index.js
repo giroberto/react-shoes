@@ -1,130 +1,64 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { MdAddShoppingCart } from 'react-icons/md';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { ProductsList } from './styles';
+import api from '../../services/api';
+import { formatPrice } from '../../util/format';
+import * as CartActions from '../../store/modules/cart/actions';
 
-export default function Home() {
-  return (
-    <ProductsList>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      products: [],
+    };
+  }
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+  async componentDidMount() {
+    const response = await api.get('/products');
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+    const data = response.data.map(product => ({
+      ...product,
+      priceFormatted: formatPrice(product.price),
+    }));
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+    this.setState({ products: data });
+  }
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+  handleAddProduct = product => {
+    const { addToCart } = this.props;
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+    addToCart(product);
+  };
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
+  render() {
+    const { products } = this.state;
+    return (
+      <ProductsList>
+        {products.map(product => (
+          <li key={product.id}>
+            <img src={product.image} alt={product.title} />
+            <strong>{product.title}</strong>
+            <span>{product.priceFormatted}</span>
 
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-      <li>
-        <img
-          src="https://static.netshoes.com.br/produtos/tenis-skechers-burns-brantley-masculino/06/EUZ-1320-006/EUZ-1320-006_detalhe2.jpg?ims=326x"
-          alt="product"
-        />
-        <strong>Black sneaker</strong>
-        <span>$99.00</span>
-
-        <button type="button">
-          <div>
-            <MdAddShoppingCart size={16} color="#FFF" />
-          </div>
-          <span>ADD TO CART</span>
-        </button>
-      </li>
-    </ProductsList>
-  );
+            <button
+              type="button"
+              onClick={() => this.handleAddProduct(product)}
+            >
+              <div>
+                <MdAddShoppingCart size={16} color="#FFF" />
+              </div>
+              <span>ADD TO CART</span>
+            </button>
+          </li>
+        ))}
+      </ProductsList>
+    );
+  }
 }
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(null, mapDispatchToProps)(Home);
